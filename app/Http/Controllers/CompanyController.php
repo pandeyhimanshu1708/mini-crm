@@ -52,7 +52,7 @@ class CompanyController extends Controller
 
         // Send email notification
         try {
-            Mail::to('admin@admin.com')->send(new NewCompanyNotification($company));
+            Mail::to('himanshupandey1708@gmail.com')->send(new NewCompanyNotification($company));
         } catch (\Exception $e) {
             // Log the error if email sending fails
             \Log::error('Failed to send new company notification email: ' . $e->getMessage());

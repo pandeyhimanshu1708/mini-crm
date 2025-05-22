@@ -309,13 +309,13 @@ return [
             'text' => 'Companies',
             'url'  => 'companies', // This will be our route name
             'icon' => 'fas fa-fw fa-building',
-            'can'  => 'view-companies', // Optional: Add a gate for permissions
+            // 'can'  => 'view-companies', // Optional: Add a gate for permissions, but remove for now to ensure visibility
         ],
         [
             'text' => 'Employees',
             'url'  => 'employees', // This will be our route name
             'icon' => 'fas fa-fw fa-users',
-            'can'  => 'view-employees', // Optional: Add a gate for permissions
+            // 'can'  => 'view-employees', // Optional: Add a gate for permissions, but remove for now to ensure visibility
         ],
 
         
