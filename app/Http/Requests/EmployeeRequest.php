@@ -25,12 +25,12 @@ class EmployeeRequest extends FormRequest
         return [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'company_id' => 'nullable|exists:companies,id', // Must exist in companies table
+            'company_id' => 'nullable|exists:companies,id', 
             'email' => [
                 'nullable',
                 'email',
                 'max:255',
-                // Unique email per employee, ignoring the current employee's ID on update
+                
                 Rule::unique('employees')->ignore($this->route('employee')),
             ],
             'phone' => 'nullable|string|max:20',

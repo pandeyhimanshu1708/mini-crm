@@ -11,7 +11,8 @@
         <div class="card-header">
             <h3 class="card-title">List of Companies</h3>
             <div class="card-tools">
-                <a href="{{ route('companies.create') }}" class="btn btn-primary btn-sm">Add New Company</a>
+                <a href="{{ route('companies.create') }}" class="btn btn-primary btn-sm mr-2">Add New Company</a>
+                <a href="{{ route('companies.export.csv') }}" class="btn btn-success btn-sm">Export to CSV</a>
             </div>
         </div>
         <div class="card-body">
@@ -43,7 +44,7 @@
                             <td>{{ $company->email }}</td>
                             <td>
                                 @if ($company->logo)
-                                    <img src="{{ asset('storage/logos/' . $company->logo) }}" alt="{{ $company->name }} Logo" width="50" height="50" class="img-thumbnail rounded-circle">
+                                   <img src="{{ asset('storage/logos/' . $company->logo) }}" alt="{{ $company->name }} Logo" width="50" height="50" class="img-thumbnail rounded-circle">
                                 @else
                                     N/A
                                 @endif
@@ -76,19 +77,7 @@
 @section('js')
     <script>
         $(function () {
-            // Initialize Datatables (optional, as pagination is handled by Laravel)
-            // If you want full Datatables functionality (search, sort on client-side),
-            // you'd need to fetch all data or use server-side processing.
-            // For now, we'll just use basic table styling.
-            // $('#companies-table').DataTable({
-            //     "paging": false, // Disable DataTables pagination since Laravel handles it
-            //     "lengthChange": false,
-            //     "searching": true,
-            //     "ordering": true,
-            //     "info": false,
-            //     "autoWidth": false,
-            //     "responsive": true,
-            // });
+           
         });
     </script>
 @stop

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Company; 
+use App\Models\Employee; 
+use Illuminate\Support\Facades\DB; 
 
 class HomeController extends Controller
 {
@@ -23,6 +26,24 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $totalCompanies = Company::count();
+        $totalEmployees = Employee::count();
+
+        
+        $companiesWithEmail = Company::whereNotNull('email')->count();
+        $companiesWithoutEmail = Company::whereNull('email')->count();
+
+       
+        $recentCompanies = Company::orderBy('created_at', 'desc')->limit(5)->get();
+        $recentEmployees = Employee::orderBy('created_at', 'desc')->limit(5)->get();
+
+        return view('home', compact(
+            'totalCompanies',
+            'totalEmployees',
+            'companiesWithEmail',
+            'companiesWithoutEmail',
+            'recentCompanies',
+            'recentEmployees'
+        ));
     }
 }

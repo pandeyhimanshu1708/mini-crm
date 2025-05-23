@@ -1,72 +1,216 @@
 @extends('adminlte::page')
 
-@section('title', 'Edit Employee')
+@section('title', 'Employee Details')
 
 @section('content_header')
-    <h1>Edit Employee: {{ $employee->first_name }} {{ $employee->last_name }}</h1>
+    <h1>Employee Details: {{ $employee->first_name }} {{ $employee->last_name }}</h1>
 @stop
 
 @section('content')
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('employees.update', $employee->id) }}" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="form-group">
-                    <label for="first_name">First Name <span class="text-danger">*</span></label>
-                    <input type="text" name="first_name" id="first_name" class="form-control @error('first_name') is-invalid @enderror" value="{{ old('first_name', $employee->first_name) }}" required>
-                    @error('first_name')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>ID:</strong>
                 </div>
-                <div class="form-group">
-                    <label for="last_name">Last Name <span class="text-danger">*</span></label>
-                    <input type="text" name="last_name" id="last_name" class="form-control @error('last_name') is-invalid @enderror" value="{{ old('last_name', $employee->last_name) }}" required>
-                    @error('last_name')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+                <div class="col-md-8">
+                    {{ $employee->id }}
                 </div>
-                <div class="form-group">
-                    <label for="company_id">Company</label>
-                    <select name="company_id" id="company_id" class="form-control @error('company_id') is-invalid @enderror">
-                        <option value="">-- Select Company --</option>
-                        @foreach ($companies as $company)
-                            <option value="{{ $company->id }}" {{ old('company_id', $employee->company_id) == $company->id ? 'selected' : '' }}>
-                                {{ $company->name }}
-                            </option>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>First Name:</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ $employee->first_name }}
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Last Name:</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ $employee->last_name }}
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Company:</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ $employee->company->name ?? 'N/A' }}
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Email:</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ $employee->email ?? 'N/A' }}
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Phone:</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ $employee->phone ?? 'N/A' }}
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Created At:</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ $employee->created_at->format('M d, Y H:i A') }}
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Last Updated:</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ $employee->updated_at->format('M d, Y H:i A') }}
+                </div>
+            </div>
+            <hr>
+            <a href="{{ route('employees.index') }}" class="btn btn-secondary">Back to Employees</a>
+            <a href="{{ route('employees.edit', $employee->id) }}" class="btn btn-warning">Edit Employee</a>
+
+            {{-- Notes Section --}}
+            <h4 class="mt-4">Notes</h4>
+            {{-- Success/Error messages for notes --}}
+            @if (session('success') && str_contains(session('success'), 'Note'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            @endif
+            @if ($errors->hasAny(['body', 'noteable_id', 'noteable_type']))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
                         @endforeach
-                    </select>
-                    @error('company_id')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+                    </ul>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $employee->email) }}">
-                    @error('email')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+            @endif
+
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Add New Note</h3>
                 </div>
-                <div class="form-group">
-                    <label for="phone">Phone</label>
-                    <input type="text" name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', $employee->phone) }}">
-                    @error('phone')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+                <div class="card-body">
+                    <form action="{{ route('notes.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="noteable_id" value="{{ $employee->id }}">
+                        <input type="hidden" name="noteable_type" value="App\Models\Employee">
+                        <div class="form-group">
+                            <textarea name="body" class="form-control" rows="3" placeholder="Enter note content..." required>{{ old('body') }}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary">Add Note</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn btn-primary">Update Employee</button>
-                <a href="{{ route('employees.index') }}" class="btn btn-secondary">Cancel</a>
-            </form>
+            </div>
+
+            <div class="notes-list mt-3">
+                @forelse ($employee->notes->sortByDesc('created_at') as $note)
+                    <div class="card card-secondary card-outline mb-2">
+                        <div class="card-body p-2">
+                            <small class="text-muted float-right">{{ $note->created_at->format('M d, Y H:i A') }} by {{ $note->user->name ?? 'N/A' }}</small>
+                            <p class="mb-0">{{ $note->body }}</p>
+                            <form action="{{ route('notes.destroy', $note->id) }}" method="POST" class="float-right ml-2">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this note?')">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-muted">No notes available for this employee.</p>
+                @endforelse
+            </div>
+
+            {{-- Attachments Section --}}
+            <h4 class="mt-4">Attachments</h4>
+            {{-- Success/Error messages for attachments --}}
+            @if (session('success') && str_contains(session('success'), 'file'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            @endif
+            @if ($errors->hasAny(['file', 'attachable_id', 'attachable_type']))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            @endif
+
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Upload New Attachment</h3>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('attachments.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="attachable_id" value="{{ $employee->id }}">
+                        <input type="hidden" name="attachable_type" value="App\Models\Employee">
+                        <div class="form-group">
+                            <label for="file">Select File (Max 10MB)</label>
+                            <input type="file" name="file" id="file" class="form-control-file @error('file') is-invalid @enderror" required>
+                            @error('file')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary">Upload File</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="attachments-list mt-3">
+                @forelse ($employee->attachments->sortByDesc('created_at') as $attachment)
+                    <div class="card card-secondary card-outline mb-2">
+                        <div class="card-body p-2 d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-file"></i>
+                                <a href="{{ route('attachments.download', $attachment->id) }}" class="ml-2">{{ $attachment->filename }}</a>
+                                <small class="text-muted">({{ round($attachment->size / 1024, 2) }} KB) uploaded by {{ $attachment->user->name ?? 'N/A' }} on {{ $attachment->created_at->format('M d, Y H:i A') }}</small>
+                            </div>
+                            <form action="{{ route('attachments.destroy', $attachment->id) }}" method="POST" class="ml-2">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this attachment?')">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-muted">No attachments available for this employee.</p>
+                @endforelse
+            </div>
         </div>
     </div>
 @stop

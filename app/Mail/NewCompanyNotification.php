@@ -16,17 +16,13 @@ class NewCompanyNotification extends Mailable
 
     public $company;
 
-    /**
-     * Create a new message instance.
-     */
+   
     public function __construct(Company $company)
     {
         $this->company = $company;
     }
 
-    /**
-     * Get the message envelope.
-     */
+    
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -34,13 +30,11 @@ class NewCompanyNotification extends Mailable
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
+    
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.companies.new_company', // We will create this Blade markdown file
+            markdown: 'emails.companies.new_company', 
             with: [
                 'companyName' => $this->company->name,
                 'companyEmail' => $this->company->email,

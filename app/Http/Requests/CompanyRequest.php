@@ -11,7 +11,7 @@ class CompanyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // Allow all authenticated users to make this request
+        return true; 
     }
 
     /**
@@ -28,11 +28,11 @@ class CompanyRequest extends FormRequest
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048|dimensions:min_width=100,min_height=100',
         ];
 
-        // If updating, the name should be unique except for the current company's ID
+       
         if ($this->method() == 'PUT' || $this->method() == 'PATCH') {
             $rules['name'] .= '|unique:companies,name,' . $this->route('company');
         } else {
-            // If creating, the name should be unique
+            
             $rules['name'] .= '|unique:companies,name';
         }
 

@@ -10,14 +10,13 @@ use App\Models\Company;
 
 class CompanyTest extends TestCase
 {
-    use RefreshDatabase; // Resets database for each test
-
+    use RefreshDatabase; 
     protected $user;
 
     protected function setUp(): void
     {
         parent::setUp();
-        // Create an admin user for testing authenticated routes
+       
         $this->user = User::factory()->create([
             'email' => 'test@admin.com',
             'password' => bcrypt('password'),
@@ -54,5 +53,5 @@ class CompanyTest extends TestCase
         $this->assertDatabaseHas('companies', ['name' => 'Test Company']);
     }
 
-    // Add more tests for update, delete, validation, etc.
+   
 }

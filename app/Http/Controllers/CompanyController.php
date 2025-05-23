@@ -6,101 +6,79 @@ use App\Models\Company;
 use App\Http\Requests\CompanyRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
-use App\Mail\NewCompanyNotification; // We will create this Mail class
+use App\Mail\NewCompanyNotification;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Models\Attachment;
+use App\Models\Note;
+
 
 class CompanyController extends Controller
 {
-    /**
-     * Apply middleware to protect routes.
-     */
     public function __construct()
     {
-        $this->middleware('auth'); // Ensure only authenticated users can access
+        $this->middleware('auth');
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $companies = Company::paginate(10); // 10 entries per page
+        $companies = Company::paginate(10);
         return view('companies.index', compact('companies'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('companies.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(CompanyRequest $request)
     {
         $data = $request->validated();
 
         if ($request->hasFile('logo')) {
             $logoPath = $request->file('logo')->store('public/logos');
-            $data['logo'] = str_replace('public/', '', $logoPath); // Store path relative to storage/app/public
+            $data['logo'] = str_replace('public/', '', $logoPath);
         }
 
         $company = Company::create($data);
 
-        // Send email notification
         try {
             Mail::to('himanshupandey1708@gmail.com')->send(new NewCompanyNotification($company));
         } catch (\Exception $e) {
-            // Log the error if email sending fails
             \Log::error('Failed to send new company notification email: ' . $e->getMessage());
         }
-
 
         return redirect()->route('companies.index')
                          ->with('success', 'Company created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Company $company)
     {
+        // Eager load notes and attachments with their users for display
+        $company->load(['notes.user', 'attachments.user']);
         return view('companies.show', compact('company'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Company $company)
     {
         return view('companies.edit', compact('company'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(CompanyRequest $request, Company $company)
     {
         $data = $request->validated();
 
         if ($request->hasFile('logo')) {
-            // Delete old logo if exists
             if ($company->logo && Storage::disk('public')->exists('logos/' . $company->logo)) {
                 Storage::disk('public')->delete('logos/' . $company->logo);
             }
             $logoPath = $request->file('logo')->store('public/logos');
             $data['logo'] = str_replace('public/', '', $logoPath);
         } elseif (isset($data['logo_removed']) && $data['logo_removed'] === '1') {
-            // If logo is explicitly marked for removal
             if ($company->logo && Storage::disk('public')->exists('logos/' . $company->logo)) {
                 Storage::disk('public')->delete('logos/' . $company->logo);
             }
             $data['logo'] = null;
         }
-
 
         $company->update($data);
 
@@ -108,18 +86,57 @@ class CompanyController extends Controller
                          ->with('success', 'Company updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Company $company)
     {
         if ($company->logo && Storage::disk('public')->exists('logos/' . $company->logo)) {
             Storage::disk('public')->delete('logos/' . $company->logo);
         }
 
+        // Delete associated notes and attachments
+        $company->notes()->delete();
+        foreach ($company->attachments as $attachment) {
+            if (Storage::disk('public')->exists($attachment->path)) {
+                Storage::disk('public')->delete($attachment->path);
+            }
+            $attachment->delete();
+        }
+
         $company->delete();
 
         return redirect()->route('companies.index')
                          ->with('success', 'Company deleted successfully.');
+    }
+
+    /**
+     * Export companies data to CSV.
+     */
+    public function exportCsv()
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="companies.csv"',
+        ];
+
+        $callback = function() {
+            $companies = Company::all();
+            $file = fopen('php://output', 'w');
+
+           
+            fputcsv($file, ['ID', 'Name', 'Email', 'Website', 'Created At', 'Updated At']);
+
+            foreach ($companies as $company) {
+                fputcsv($file, [
+                    $company->id,
+                    $company->name,
+                    $company->email,
+                    $company->website,
+                    $company->created_at,
+                    $company->updated_at,
+                ]);
+            }
+            fclose($file);
+        };
+
+        return new StreamedResponse($callback, 200, $headers);
     }
 }

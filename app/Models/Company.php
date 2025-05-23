@@ -21,11 +21,19 @@ class Company extends Model
         'website',
     ];
 
-    /**
-     * Get the employees for the company.
-     */
+    
     public function employees()
     {
         return $this->hasMany(Employee::class);
+    }
+
+    public function notes()
+    {
+        return $this->morphMany(Note::class, 'noteable');
+    }
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
     }
 }

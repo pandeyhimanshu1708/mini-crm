@@ -11,7 +11,8 @@
         <div class="card-header">
             <h3 class="card-title">List of Employees</h3>
             <div class="card-tools">
-                <a href="{{ route('employees.create') }}" class="btn btn-primary btn-sm">Add New Employee</a>
+                <a href="{{ route('employees.create') }}" class="btn btn-primary btn-sm mr-2">Add New Employee</a>
+                <a href="{{ route('employees.export.csv') }}" class="btn btn-success btn-sm">Export to CSV</a>
             </div>
         </div>
         <div class="card-body">
@@ -42,7 +43,7 @@
                             <td>{{ $employee->id }}</td>
                             <td>{{ $employee->first_name }}</td>
                             <td>{{ $employee->last_name }}</td>
-                            <td>{{ $employee->company->name ?? 'N/A' }}</td> {{-- Display company name, or N/A if null --}}
+                            <td>{{ $employee->company->name ?? 'N/A' }}</td>
                             <td>{{ $employee->email }}</td>
                             <td>{{ $employee->phone }}</td>
                             <td>
@@ -72,18 +73,16 @@
 @section('js')
     <script>
         $(function () {
-            // Similar to companies table, if you want full Datatables functionality,
-            // you'd need to fetch all data or use server-side processing.
-            // For now, it's just basic table styling.
-            // $('#employees-table').DataTable({
-            //     "paging": false,
-            //     "lengthChange": false,
-            //     "searching": true,
-            //     "ordering": true,
-            //     "info": false,
-            //     "autoWidth": false,
-            //     "responsive": true,
-            // });
+           
+            $('#employees-table').DataTable({
+                "paging": false,
+                "lengthChange": false,
+                "searching": true,
+                "ordering": true,
+                "info": false,
+                "autoWidth": false,
+                "responsive": true,
+            });
         });
     </script>
 @stop

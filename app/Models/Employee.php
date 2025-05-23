@@ -22,11 +22,18 @@ class Employee extends Model
         'phone',
     ];
 
-    /**
-     * Get the company that owns the employee.
-     */
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function notes()
+    {
+        return $this->morphMany(Note::class, 'noteable');
+    }
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
     }
 }

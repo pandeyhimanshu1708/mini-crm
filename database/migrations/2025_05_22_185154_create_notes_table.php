@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('employees', function (Blueprint $table) {
+        Schema::create('notes', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name'); 
-            $table->string('last_name');  
-            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('set null'); /
-            $table->string('email')->nullable();
-            $table->string('phone')->nullable();
+            $table->text('body'); 
+            $table->morphs('noteable'); 
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null'); 
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('employees');
+        Schema::dropIfExists('notes');
     }
 };
